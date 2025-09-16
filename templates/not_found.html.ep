@@ -1,19 +1,18 @@
 % layout q[mojdoc];
 % stash badge => q[404 Not Found];
-% my $rp = stash(q[relpath]) // param(q[doc]);
+% my $rp = $c->req->url->path->to_string;
 
-<h1>Document Not Found</h1>
+<h1>URL Not Found</h1>
 % if ($rp) {
-  <p>We couldn’t find the document:</p>
+  <p>We couldn’t find the URL:</p>
   <pre><code><%= $rp %></code></pre>
 % } else {
-  <p>We couldn’t find the requested document.</p>
+  <p>We couldn’t find the requested URL.</p>
 % }
 
 <h2>What you can try</h2>
 <ul>
-  <li>Check the path and file name (case matters, for example).</li>
-  <li>Make sure the file exists under your docs root.</li>
+  <li>Check the URL for typos.</li>
   <li>Pick a file from the sidebar, or <a href="<%= url_for(q[/]) %>">go back home</a>.</li>
 </ul>
 
