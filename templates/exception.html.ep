@@ -1,0 +1,26 @@
+% layout q[mojdoc];
+% stash badge => q[500 Something Broke];
+% my $rp = $c->req->url->path->to_string;
+
+<h1>Something Broke</h1>
+% if ($rp) {
+  <p>Something went wrong at:</p>
+  <pre><code><%= $rp %></code></pre>
+% } else {
+  <p>Somethiong went wrong here.</p>
+% }
+
+% if (app->mode eq q[development]) {
+  <h2>Exception</h2>
+  <pre><%= stash(q[exception]) %></pre>
+% }
+
+<h2>What you can try</h2>
+<ul>
+  <li>Check the URL for typos.</li>
+  <li>Try reloading the page you were on.</li>
+  <li>Pick a file from the sidebar, or <a href="<%= url_for(q[/]) %>">go back home</a>.</li>
+</ul>
+
+<hr />
+<p><em>If you think this is a mistake, well I disagree! I’m just doing what I’m told, so get good.</em></p>
