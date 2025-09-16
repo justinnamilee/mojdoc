@@ -1,0 +1,205 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+
+use Mojolicious::Lite -signatures;
+use Mojo::File qw[path];
+use Mojo::Util qw[decode xml_escape];
+
+
+#?## CONFIG & GLOBALS
+
+#* config load (attempt)
+eval { plugin q[Config] };
+app->log->warn(q[Missing or invalid local config: Falling back to ENV or defaults]) if $@;
+
+#* defaults
+app->defaults(
+  badge => app->config->{badge} // $ENV{MOJDOC_BADGE} // q[cyber-docs]
+);
+
+#* documents path
+my $DOX = path(
+  app->config->{dox}
+    // $ENV{MOJDOC_DOX}
+    // path(__FILE__)->sibling('private')->child('dox')
+)->to_abs;
+app->log->debug(qq[Configured 'DOX' folder: $DOX]);
+app->log->error(q[The 'DOX' folder above does not exist, please create it!]) unless -d $DOX;
+
+#* welcome page (rendered on /)
+my $WELCOME = app->config->{welcome}
+  // $ENV{MOJDOC_WELCOME}
+  // path(__FILE__)->sibling('public')->child('welcome.md');
+app->log->debug(qq[Configured 'WELCOME' file: $WELCOME]);
+app->log->error(q[The 'WELCOME' file above does not exist, please create it (if you want it)!]) unless -f $WELCOME;
+
+#* select md renderer (or fallback to pre)
+my $RENDER = do {
+  if (eval { require Text::MultiMarkdown; 1 }) {
+    my $m = Text::MultiMarkdown->new;
+    app->log->debug(q[Configured 'RENDER' module: Text::MultiMarkdown]);
+    sub ($text) { $m->markdown($text) }
+  }
+  elsif (eval { require Text::Markdown; 1 }) {
+    app->log->debug(q[Configured 'RENDER' module: Text::Markdown]);
+    sub ($text) { Text::Markdown::markdown($text) }
+  }
+  elsif (eval { require Markdown::Tiny; 1 }) {
+    app->log->debug(q[Configured 'RENDER' module: Markdown::Tiny]);
+    sub ($text) { Markdown::Tiny::markdown($text) }
+  }
+  else {
+    app->log->warn(q[No Markdown module found: Falling back to <pre> tags]);
+    sub ($text) { '<pre>' . xml_escape($text) . '</pre>' }
+  }
+};
+
+#* some security bs, it's probably important
+hook before_dispatch => sub ($c) {
+  $c->res->headers->content_security_policy(join(q[; ],
+    q[default-src 'self'],
+    q[script-src 'self' https://cdnjs.cloudflare.com 'sha256-O6piNkhLv4BI/Oje+MccCmgUSrS1sIp+CMaOsvD/VWU='],
+    q[style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com],
+    q[img-src 'self' data:],
+    q[font-src 'self' data:],
+    q[connect-src 'self'],
+    q[object-src 'none'],
+    q[base-uri 'self'],
+    q[form-action 'self'],
+    q[frame-ancestors 'self'],
+  ));
+
+  $c->res->headers->header('X-Content-Type-Options' => 'nosniff');;
+  $c->res->headers->header('Referrer-Policy'        => 'no-referrer');;
+};
+
+
+#?## HELPERS
+
+#* scan for files
+helper crawlify => sub ($c) {
+  my ($root, @list) = ($DOX);
+  return [] unless -d $root;
+
+  foreach my $file ($root->list_tree({ hidden => 0 })->each) {
+    next unless -f $file;
+    next unless $file->basename =~ /\.(?:md|markdown)$/i;
+
+    my $rel = $file->to_rel($root)->to_string;
+    push @list, $rel;
+  }
+
+  @list = sort { lc($a) cmp lc($b) } @list;
+  return \@list;
+};
+
+#* safely resolve a relative path (prevent traversal probably)
+helper safify => sub ($c, $relpath) {
+  $relpath //= q[];
+
+  $relpath =~ s[^\s+|\s+$][]g;
+  $relpath =~ s[\\][/]g;
+  $relpath =~ s[//+][/]g;
+  $relpath =~ s[^\./][];
+
+  my $root = $DOX->realpath;
+  return undef unless -d $root;
+
+  my $real = path($root, split m[/+], $relpath)->to_abs->realpath;
+  return undef unless -f $real;
+
+  my $rel = $real->to_rel($root)->to_string;
+  return undef if $rel =~ m[^\.\.(?:/|$)];
+
+  return $real;
+};
+
+#* turn ``` blocks into code blocks
+helper githubify => sub ($c, $md) {
+  my ($in, $lang, @out, @buf) = (0, q[]);
+  my @lines = split(/\r?\n/, $md, -1);
+
+  for my $line (@lines) {
+    if (!$in && $line =~ /^\s*```(\S*)\s*$/) {
+      #? we're starting a new block
+      $in = 1;
+      $lang = $1 // q[];
+      @buf = ();
+      next;
+    }
+
+    if ($in && $line =~ /^\s*```\s*$/) {
+      #? we're closing an existing block
+      my $code = join(qq[\n], @buf);
+      my $class = $lang ? qq[class="language-$lang"] : q[];
+
+      $code = xml_escape($code);
+      push @out, qq{<pre><code $class>$code\n</code></pre>};
+
+      $in = 0;
+      $lang = q[];
+      next;
+    }
+
+    if ($in) {
+      #? we're inside a block, add to buffer
+      push @buf, $line;
+    } else {
+      #? we're outside a block, add to output
+      push @out, $line;
+    }
+  }
+
+  #! if an opening fence wasn't closed, just put it back
+  if ($in) { push @out, "```$lang", @buf }
+
+  #? send the output back to the renderer
+  return join "\n", @out;
+};
+
+#* rendering pipeline, pretty basic
+helper renderify => sub ($c, $path) {
+  return q[] unless -f $path;
+  my $text = decode(q[UTF-8], $path->slurp);
+
+  return $RENDER->($c->githubify($text));
+};
+
+
+#?## ROUTES
+
+get q[/health] => sub ($c) {
+  $c->render(text => 'OK')
+};
+
+get q[/] => sub ($c) {
+  my $files = $c->crawlify;
+  my $html = -f $WELCOME
+    ? $c->renderify($WELCOME)
+    : q[<pre>I couldn't find a "welcome" file, see the logs.</pre>];
+
+  $c->stash(files => $files, selected => undef, html => $html, relpath => undef);
+  $c->render(template => q[dox], format => q[html]);
+};
+
+get q[/view/*doc] => [doc => qr[.*]] => sub ($c) {
+  my $rel = $c->param(q[doc]) // q[];
+  $rel =~ s[^/][]; $rel =~ s[/$][];
+  my $abs = $c->safify($rel) // q[];
+
+  return $c->render(template => q[nodox], status => 404) unless -f $abs;
+
+  my $html = $c->renderify($abs);
+  my $files = $c->crawlify;
+
+  $c->stash(files => $files, selected => $rel, html => $html, relpath => $rel);
+  $c->render(template => q[dox], format => q[html]);
+} => 'view';
+
+
+#?## RUN IT
+
+app->start;

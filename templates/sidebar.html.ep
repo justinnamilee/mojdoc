@@ -1,0 +1,39 @@
+% my $files    = stash(q[files]) // param(q[files]) // crawlify();
+% my $selected = stash(q[selected]) // stash(q[relpath]) // q[];
+
+% my %tree;
+% for my $path (@$files) {
+%   my @parts = split q[/], $path;
+%   my $file  = pop @parts // $path;
+%   my $cur   = \%tree;
+%   for my $p (@parts) { $cur = ($cur->{dirs}{$p} //= {}); }
+%   push @{$cur->{files}}, { name => $file, path => $path };
+% }
+
+% my $render_tree;
+% $render_tree = begin
+%   my ($node, $prefix) = @_;
+%   $prefix //= q[];
+%   for my $dir (sort { lc $a cmp lc $b } keys %{ $node->{dirs} // {} }) {
+%     my $path_prefix = $prefix.$dir.q[/];
+%     my $is_ancestor = $selected && index($selected.q[/], $path_prefix) == 0;
+<details class="dir" data-path="<%= $prefix.$dir %>" <%= $is_ancestor ? q[open] : q[] %>>
+  <summary><span class="folder" aria-hidden="true">□</span> <%= $dir %></summary>
+  <ul>
+%==  $render_tree->($node->{dirs}{$dir}, $path_prefix)
+  </ul>
+</details>
+%   }
+%   for my $f (sort { lc $a->{name} cmp lc $b->{name} } @{ $node->{files} // [] }) {
+%     my $url = url_for(q[view], doc => $f->{path});
+%     my $is  = $selected && $selected eq $f->{path} ? q[active] : q[];
+    <li class="file"><a class="<%= $is %>" href="<%= $url %>"><%= $f->{name} %></a></li>
+%   }
+% end
+
+<ul class="filelist tree">
+%== $render_tree->(\%tree)
+% if (!@$files) {
+  <li><a class="active" href="#">(No markdown files found)</a></li>
+% }
+</ul>

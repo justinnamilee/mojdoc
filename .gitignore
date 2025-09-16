@@ -1,0 +1,75 @@
+# --- Perl / build artifacts ---
+/blib/
+/_build/
+/Build
+/Build.bat
+/Makefile
+/Makefile.old
+/META.*
+/MYMETA.*
+/pm_to_blib
+/inc/
+*.bs
+*.o
+*.obj
+*.so
+*.dll
+*.a
+*.lib
+/.prove
+/cover_db/
+/nytprof.out
+/.last_cover_stats
+
+# --- Local deps (carton / local::lib / cpanm) ---
+/local/
+/perl5/
+/.cpanm/
+
+# --- Mojolicious runtime/prod files ---
+/log/*.log
+/log/*.json
+/hypnotoad.pid
+/hypnotoad.lock
+/morbo.pid
+mojdoc.conf
+
+# --- Env/config & secrets (adjust to your scheme) ---
+/.env
+/.env.*
+/*.local.conf
+/*.dev.conf
+/*.test.conf
+/*.production.conf
+/secrets/
+
+# --- Databases / queues (e.g. Minion SQLite) ---
+/*.db
+/*.sqlite*
+/*.db-shm
+/*.db-wal
+/minion.db
+
+# --- AssetPack output (keep if you deploy compiled assets) ---
+/public/assests
+
+# --- Editors / OS cruft ---
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.old
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- Dist::Zilla / fatpack (if used) ---
+/.build/
+/fatlib/
+/fatpacked.pl
+
+# --- Misc ---
+/public/dox
+/private/

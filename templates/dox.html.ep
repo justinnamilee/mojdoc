@@ -1,0 +1,3 @@
+% layout q[mojdoc];
+%# Expect: stash(html, files, selected, relpath)
+<%== stash(q[html]) %>

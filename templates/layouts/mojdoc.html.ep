@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title><%= stash(q[relpath]) ? "MOJDOC – " . stash(q[relpath]) : "MOJDOC" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="icon" href="<%= url_for(q[/favicon.svg]) %>" type="image/svg+xml">
+    <%= stylesheet q[/css/mojdoc.css] %>
+    %= content q[head_extra]
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="logo"><%= link_to q[MOJDOC] => q[/] %></div>
+        <div class="badge"><%= stash(q[badge]) // q[cyber-docs] %></div>
+      </header>
+
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="nav-title">Documentation</div>
+          <%= include q[sidebar], files => (stash(q[files]) // crawlify()), selected => stash(q[selected]) %>
+        </aside>
+
+        <main class="content">
+          % if (my $rp = stash(q[relpath])) {
+            <div class="crumbs">&nbsp;/ <%= join q[ / ], grep { length } split m[/+], $rp %></div>
+          % }
+          <article class="md"><%== content %></article>
+        </main>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Existing persistence
+      document.querySelectorAll('.sidebar details.dir').forEach(d => {
+        const key = 'nav-open:' + d.dataset.path;
+        if (localStorage.getItem(key) === '1') d.setAttribute('open', '');
+        d.addEventListener('toggle', () => {
+          if (d.open) localStorage.setItem(key, '1');
+          else localStorage.removeItem(key);
+        });
+      });
+
+      // NEW: ensure the folder(s) containing the active file are open
+      const active = document.querySelector('.file a.active');
+      if (active) {
+        let d = active.closest('details.dir');
+        while (d) {
+          const key = 'nav-open:' + d.dataset.path;
+          if (!d.open) d.open = true;
+          if (!localStorage.getItem(key)) localStorage.setItem(key, '1'); // remember
+          d = d.parentElement.closest('details.dir');
+        }
+      }
+    });
+    </script>
+
+    %= content q[body_end]
+  </body>
+</html>
