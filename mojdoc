@@ -98,6 +98,8 @@ helper crawlify => sub ($c) {
 
 #* safely resolve a relative path (prevent traversal probably)
 helper safify => sub ($c, $relpath) {
+  return undef unless -d $DOX;
+
   $relpath //= q[];
 
   $relpath =~ s[^\s+|\s+$][]g;
