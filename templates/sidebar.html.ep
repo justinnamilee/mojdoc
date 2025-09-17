@@ -37,3 +37,13 @@
   <li><a class="active" href="#">(No markdown files found)</a></li>
 % }
 </ul>
+
+<div class="sidebar-footer">
+  <a
+    href="https://github.com/justinnamilee/mojdoc"
+    class="github-link"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Mojdoc on GitHub by Justin Lee"
+  >Mojdoc on GitHub by Justin Lee</a>
+</div>
