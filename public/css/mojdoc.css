@@ -16,6 +16,9 @@
 	--nav-connector-length: 14px;
 	--mojdoc-topbar-border: 1px;
 	--mojdoc-topbar-h: 56px;
+  --sidebar-w: 280px;
+  --sidebar-min: 220px;
+  --sidebar-max: 520px;
 }
 
 * {
@@ -87,7 +90,7 @@ html, body {
 .shell {
 	position: relative;
 	display: grid;
-	grid-template-columns: 280px 1fr;
+	grid-template-columns: auto 1fr;
 	min-height: 0;
 }
 
@@ -97,8 +100,12 @@ html, body {
 		linear-gradient(180deg, rgba(0, 229, 255, .04), transparent 22%),
 		linear-gradient(180deg, rgba(255, 43, 214, .03), transparent 30%),
 		var(--bg-2);
-	overflow: auto;
+	overflow: hidden;
 	padding: calc(14px + var(--nav-nudge)) 10px 24px 14px;
+  inline-size: var(--sidebar-w);
+  min-inline-size: var(--sidebar-min);
+  max-inline-size: var(--sidebar-max);
+  resize: horizontal;
 }
 
 .nav-title {
