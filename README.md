@@ -2,6 +2,8 @@
 
 A tiny [Mojolicious::Lite](https://mojolicious.org/) app that serves and renders a folder (and subfolders) of Markdown files.
 
+<p align="center"><img src="https://raw.githubusercontent.com/justinnamilee/mojdoc/refs/heads/main/.github/preview.png" alt="MOJDOC Preview" width="720"></p>
+
 ---
 
 ## Features
