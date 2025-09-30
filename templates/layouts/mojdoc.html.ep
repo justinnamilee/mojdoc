@@ -20,7 +20,7 @@
 
       <div class="shell">
         <aside class="sidebar">
-          <div class="nav-title">Documentation</div>
+          <!--<div class="nav-title">Documentation</div>-->
           <%= include q[sidebar], files => (stash(q[files]) // crawlify()), selected => stash(q[selected]) %>
         </aside>
 
