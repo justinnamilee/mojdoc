@@ -43,6 +43,7 @@ mojdoc.conf
 /*.production.conf
 /secrets/
 /ecosystem.config.js
+/docker-compose.yml
 
 # --- Databases / queues (e.g. Minion SQLite) ---
 /*.db
