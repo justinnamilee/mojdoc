@@ -1,12 +1,9 @@
 /* =========================
-      App Style!
+        Mojdoc style!
    ========================= */
 
 @layer reset, tokens, base, components, utilities;
 
-/* -------------------------
-   Reset (minimal, modern)
-------------------------- */
 @layer reset {
   *, *::before, *::after {
     box-sizing: border-box;
@@ -43,23 +40,15 @@
   }
 }
 
-/* -------------------------
-   Tokens / Theme
-------------------------- */
 @layer tokens {
   :root {
-    /* layout */
     --sidebar-w: 280px;
     --sidebar-min: 220px;
     --sidebar-max: 520px;
     --topbar-h: 56px;
-
-    /* motion */
     --ease-std: cubic-bezier(.2, .6, .2, 1);
     --dur-1: 160ms;
     --dur-2: 260ms;
-
-    /* color */
     --bg: #0b0f14;
     --bg-2: #0f1720;
     --panel: #121826;
@@ -71,20 +60,16 @@
     --link: #7df9ff;
     --code-bg: #0a0f1a;
     --code-border: #1f2a44;
-
-    /* effects */
     --shadow: 0 8px 24px rgba(0, 0, 0, .45);
-
-    /* nav cosmetics */
     --nav-nudge: 4px;
     --nav-connector-offset: 10px;
     --nav-connector-length: 14px;
 
     color-scheme: dark;
-    /* enables dark scrollbars, form controls */
   }
 
-  /* Optional light theme (toggle with [data-theme="light"] on <html> or <body>) */
+  /* Optional light theme (toggle with [data-theme="light"] on <html> or <body>). */
+  /* Note this is not wired up in the HTML or Javascript right now... */
   :root[data-theme="light"] {
     --bg: #f7fafc;
     --bg-2: #eef2f7;
@@ -101,9 +86,6 @@
   }
 }
 
-/* -------------------------
-   Base
-------------------------- */
 @layer base {
   :root {
     --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
@@ -120,7 +102,6 @@
       var(--bg);
   }
 
-  /* Smooth but respectful motion */
   @media (prefers-reduced-motion: reduce) {
     html:focus-within {
       scroll-behavior: auto;
@@ -134,9 +115,6 @@
   }
 }
 
-/* -------------------------
-   Components
-------------------------- */
 @layer components {
   .app {
     display: grid;
@@ -230,7 +208,6 @@
 
     >.sidebar-footer {
       margin-block-start: auto;
-      /* pushes it to the bottom */
       padding: 0.75rem 0.5rem 1rem;
       text-align: center;
       font-size: 0.85rem;
@@ -244,7 +221,6 @@
     padding: 24px 28px 56px;
   }
 
-  /* Markdown-ish content styling */
   .md {
     h1, h2, h3, h4, h5, h6 {
       line-height: 1.25;
@@ -321,7 +297,6 @@
     }
   }
 
-  /* Breadcrumbs */
   .crumbs {
     color: var(--muted);
     font-size: 12px;
@@ -344,7 +319,6 @@
     }
   }
 
-  /* File lists + tree */
   .filelist {
     list-style: none;
     margin: 0;
@@ -450,10 +424,7 @@
     }
   }
 
-  /* Scrollbars */
   :root {
-
-    /* For Chromium/WebKit */
     &::-webkit-scrollbar {
       inline-size: 10px;
       block-size: 10px;
@@ -474,9 +445,6 @@
   }
 }
 
-/* -------------------------
-   Utilities
-------------------------- */
 @layer utilities {
   .visually-hidden {
     position: absolute !important;
