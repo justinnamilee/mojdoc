@@ -42,6 +42,7 @@ mojdoc.conf
 /*.test.conf
 /*.production.conf
 /secrets/
+/ecosystem.config.js
 
 # --- Databases / queues (e.g. Minion SQLite) ---
 /*.db
