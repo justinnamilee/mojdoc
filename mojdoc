@@ -9,7 +9,10 @@ use Mojo::File qw[path];
 use Mojo::Util qw[decode xml_escape];
 
 
-#?## CONFIG & GLOBALS
+#?## CONFIG & GLOBALS & SIGNALS
+
+#* make sure we don't lose warnings
+$SIG{__WARN__} = sub ($m) { chomp($m); app->log->warn($m) };
 
 #* config load (attempt)
 eval { plugin q[Config] };
@@ -17,7 +20,8 @@ app->log->warn(q[Missing or invalid local config: Falling back to ENV or default
 
 #* defaults
 app->defaults(
-  badge => app->config->{badge} // $ENV{MOJDOC_BADGE} // q[cyber-docs]
+  badge => app->config->{badge} // $ENV{MOJDOC_BADGE} // q[cyber-docs],
+  logit => int(app->config->{logit} // $ENV{MOJDOC_LOGIT} // 0)
 );
 
 #* documents path
@@ -170,6 +174,21 @@ helper renderify => sub ($c, $path) {
   return $RENDER->($c->githubify($text));
 };
 
+#* get the logline for the view call
+helper logit => sub ($c, $path) {
+  my $ip   = $c->tx->remote_address;
+  my $ua   = $c->req->headers->user_agent // q[-];
+  my $ref  = $c->req->headers->referrer // $c->req->headers->referer // q[-];
+  my $host = $c->req->headers->host // q[-];
+  my $qs   = $c->req->url->query->to_string // q[];
+  my $rt   = $c->current_route // q[-];
+
+  return sprintf(
+    q[%s %s method=%s host=%s ua="%s" ref="%s" route=%s qs="%s"],
+    $ip, $path, $c->req->method, $host, $ua, $ref, $rt, $qs
+  )
+};
+
 
 #?## ROUTES
 
@@ -198,6 +217,8 @@ get q[/view/*doc] => [doc => qr[.*]] => sub ($c) {
 
   $c->stash(files => $files, selected => $rel, html => $html, relpath => $rel);
   $c->render(template => q[dox], format => q[html]);
+
+  $c->log->info($c->logit($abs)) if ($c->stash(q[logit]));
 } => 'view';
 
 

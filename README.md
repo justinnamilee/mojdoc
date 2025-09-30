@@ -47,11 +47,12 @@ perl mojdoc daemon -l http://*:3000
 
 You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environment variables. Defaults are shown below.
 
-|   Setting | Env Var          | Default                           | What it does                     |
+|   Setting | ENV Var          | Default                           | What it does                     |
 | --------: | ---------------- | --------------------------------- | -------------------------------- |
 |   `badge` | `MOJDOC_BADGE`   | `cyber-docs`                      | Label used by the template UI.   |
 |     `dox` | `MOJDOC_DOX`     | `private/dox`                     | Root folder to scan for docs.    |
 | `welcome` | `MOJDOC_WELCOME` | `public/welcome.md`               | Welcome file rendered on `/`.    |
+|   `logit` | `MOJDOC_LOGIT`   | `0`                               | Enable `view` GET logs with `1`. |
 
 Example `mojdoc.conf` that would be read by morbo or hypnotoad:
 
@@ -59,7 +60,8 @@ Example `mojdoc.conf` that would be read by morbo or hypnotoad:
 {
   "badge": "super-secret-dox",
   "dox": "/var/www/secure/dox",
-  "welcome": "/var/www/secure/welcome.md"
+  "welcome": "/var/www/secure/welcome.md",
+  "logit": 0
 }
 ```
 
