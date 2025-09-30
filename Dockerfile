@@ -1,6 +1,6 @@
 FROM perl:latest
 WORKDIR /opt/mojdoc
-COPY Markfile.PL .
+COPY Makefile.PL .
 RUN cpanm --installdeps -n .
 COPY . .
 RUN prove
