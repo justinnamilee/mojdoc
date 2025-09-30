@@ -233,6 +233,8 @@
       /* pushes it to the bottom */
       padding: 0.75rem 0.5rem 1rem;
       text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
   }
 
