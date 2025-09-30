@@ -1,23 +1,30 @@
 # Mojolicious Markdown Docs Viewer
 
-A tiny Mojolicious::Lite app that serves and renders a folder (and subfolders) of Markdown files.
+A tiny [Mojolicious::Lite](https://mojolicious.org/) app that serves and renders a folder (and subfolders) of Markdown files.
 
 ---
 
 ## Features
 
-* Renders `.md` / `.markdown` files (recursively) from a docs folder
-* GitHub-style fenced code blocks (`lang … `) and Syntax via `highlight.js`
+* Renders `.md` / `.markdown` files (recursively) from a docs folder (ignores everything else)
+* GitHub-style fenced code blocks (`lang … `)
+* Syntax highlighting via `highlight.js`
 * Pluggable Markdown backends (first found wins):
-  `Text::MultiMarkdown` → `Text::Markdown` → `Markdown::Tiny` → fallback to `<pre>`
-* Safe path resolution (prevents path traversal)
-* Code written by someone with zero Mojolicious experience
+  1. `Text::MultiMarkdown`
+  1. `Text::Markdown`
+  1. `Markdown::Tiny`
+  1. fallback to `<pre>`
+* Safe path resolution (prevents path traversal)...hopefully
+* Code written by someone with zero Mojolicious experience, but lots of Perl experience
 
 ---
 
 ## Quickstart
 
 ```bash
+# Setup Mojolicious (see URL above), for example
+cpanm Mojolicious
+
 # Install (pick your favorite Markdown backend; MultiMarkdown recommended)
 cpanm Text::MultiMarkdown
 
@@ -63,10 +70,10 @@ Example `mojdoc.conf` that would be read by morbo or hypnotoad:
 ## Routes
 
 * `GET /`
-  Renders the welcome page and shows a file list discovered under `DOX`.
+  Renders the welcome page and shows a list of matching files discovered under `DOX`.
 
 * `GET /view/*doc`
-  Renders a specific Markdown file. Only files within the `DOX` tree are allowed.
+  Renders a specific Markdown file. From files within the `DOX` tree.
 
 * `GET /health`
   Returns `OK`. Useful for health checks.
@@ -76,22 +83,24 @@ Example `mojdoc.conf` that would be read by morbo or hypnotoad:
 ## Directory Structure
 
 ```
-├── mojdoc
-├── mojdoc.conf         ## optional mojdoc.conf is in .gitignore
-├── private             ## optional private is in .gitignore
-│   ├── welcome.md      ## optional if you wanted to override default welcome.md
-│   └── dox             ## default path for documents
-│       └── example.md  ## this would be one of your files
+├── mojdoc              ## main application
+├── mojdoc.conf         ## optional: mojdoc.conf is in .gitignore
+├── private             ## optional: private is in .gitignore, you can store things here
+│   ├── welcome.md      ## optional: if you wanted to override default welcome.md
+│   └── dox             ## optional: default path for documents
+│       └── example.md  ## (this would be one of your files)
 ├── public
 │   ├── css
 │   │   └── mojdoc.css
 │   ├── favicon.svg
 │   └── welcome.md      ## default included welcome.md
-├── README.md
-└── templates
+├── README.md           ## you are here
+└── templates           ## mojolicious application templates
     ├── dox.html.ep
+    ├── exception.html.ep
     ├── layouts
     │   └── mojdoc.html.ep
     ├── nodox.html.ep
+    ├── not_found.html.ep
     └── sidebar.html.ep
 ```
