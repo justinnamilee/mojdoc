@@ -87,6 +87,8 @@ You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environ
 }
 ```
 
+> For more information on this topic see [The Cookbook](https://docs.mojolicious.org/Mojolicious/Guides/Cookbook).
+
 ---
 
 ## Routes
