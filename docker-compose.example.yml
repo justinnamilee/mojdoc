@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  mojdoc:
+    image: ghcr.io/justinnamilee/mojdoc:latest
+    container_name: mojdoc
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount a config file for use with hypnotoad (use this or environment below)
+      - ${MOJDOC_CONFIG_LOCAL:-./mojdoc.conf}:/opt/mojdoc/mojdoc.conf:ro
+
+      # (required) Mount the docs directory from host into /data in the container
+      - ${MOJDOC_DOX_LOCAL:-./dox}:/data:ro
+      # (optional) Mount the welcome file from host into /welcome.md
+      - ${MOJDOC_WELCOME_LOCAL:-./welcome.md}:/welcome.md:ro
+
+    # These can ALL be set in the MOJDOC_CONFIG_LOCAL file, or here...
+    environment:
+      # Where the app should look (matched to above)
+      MOJDOC_DOX: /data
+      MOJDOC_WELCOME: /welcome.md
+
+      # (optional) Other app flags
+      MOJDOC_BANNER: ${MOJDOC_BANNER:-"mojdoc-docker"}
+      MOJDOC_LOGIT: ${MOJDOC_LOGIT:-0}
+
+      # (optional) Mojolicious hints
+      MOJO_MODE: ${MOJO_MODE:-production}
+      MOJO_LISTEN: http://*:3000
+
+    # (optional) simple healthcheck
+    healthcheck:
+      test: ["CMD", "mojo", "get", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
