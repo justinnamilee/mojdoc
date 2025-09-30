@@ -189,7 +189,6 @@ get q[/] => sub ($c) {
 
 get q[/view/*doc] => [doc => qr[.*]] => sub ($c) {
   my $rel = $c->param(q[doc]) // q[];
-  $rel =~ s[^/][]; $rel =~ s[/$][];
   my $abs = $c->safify($rel) // q[];
 
   return $c->render(template => q[nodox], status => 404) unless -f $abs;
