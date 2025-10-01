@@ -28,7 +28,7 @@ app->defaults(
 my $DOX = path(
   app->config->{dox}
     // $ENV{MOJDOC_DOX}
-    // path(__FILE__)->sibling('private')->child('dox')
+    // path(__FILE__)->sibling(q[private])->child(q[dox])
 )->to_abs;
 app->log->debug(qq[Configured 'DOX' folder: $DOX]);
 app->log->error(q[The 'DOX' folder above does not exist, please create it!]) unless -d $DOX;
@@ -36,7 +36,7 @@ app->log->error(q[The 'DOX' folder above does not exist, please create it!]) unl
 #* welcome page (rendered on /)
 my $WELCOME = app->config->{welcome}
   // $ENV{MOJDOC_WELCOME}
-  // path(__FILE__)->sibling('public')->child('welcome.md');
+  // path(__FILE__)->sibling(q[public])->child(q[welcome.md]);
 app->log->debug(qq[Configured 'WELCOME' file: $WELCOME]);
 app->log->error(q[The 'WELCOME' file above does not exist, please create it (if you want it)!]) unless -f $WELCOME;
 
@@ -57,7 +57,7 @@ my $RENDER = do {
   }
   else {
     app->log->warn(q[No Markdown module found: Falling back to <pre> tags]);
-    sub ($text) { '<pre>' . xml_escape($text) . '</pre>' }
+    sub ($text) { q[<pre>] . xml_escape($text) . q[</pre>] }
   }
 };
 
@@ -76,8 +76,8 @@ hook before_dispatch => sub ($c) {
     q[frame-ancestors 'self'],
   ));
 
-  $c->res->headers->header('X-Content-Type-Options' => 'nosniff');;
-  $c->res->headers->header('Referrer-Policy'        => 'no-referrer');;
+  $c->res->headers->header(q[X-Content-Type-Options] => q[nosniff]);;
+  $c->res->headers->header(q[Referrer-Policy]        => q[no-referrer]);;
 };
 
 
@@ -207,7 +207,7 @@ helper logit => sub ($c, $path) {
 #?## ROUTES
 
 get q[/health] => sub ($c) {
-  $c->render(text => 'OK')
+  $c->render(text => q[OK])
 };
 
 get q[/] => sub ($c) {
@@ -233,7 +233,7 @@ get q[/view/*doc] => [doc => qr[.*]] => sub ($c) {
   $c->render(template => q[dox], format => q[html]);
 
   $c->log->info($c->logit($abs)) if ($c->stash(q[logit]));
-} => 'view';
+} => q[view];
 
 
 #?## RUN IT
