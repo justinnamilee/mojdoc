@@ -120,7 +120,8 @@ helper safify => sub ($c, $relpath) {
 
   my @segment = ();
   foreach my $s (@{path($relpath)->to_array}) {
-    next unless (length($s) && $s ne q[..] && $s ne q[.]);
+    return undef if $s eq q[..];
+    next unless (length($s) && $s ne q[.]);
 
     push(@segment, $s);
   }
@@ -156,7 +157,7 @@ helper githubify => sub ($c, $md) {
       my $class = $lang ? qq[class="language-$lang"] : q[];
 
       $code = xml_escape($code);
-      push @out, qq{<pre><code $class>$code\n</code></pre>};
+      push @out, qq[<pre><code $class>$code\n</code></pre>];
 
       $in = 0;
       $lang = q[];
