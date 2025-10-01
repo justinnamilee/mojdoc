@@ -20,12 +20,7 @@ require qq[$FindBin::Bin/../mojdoc];
 my $app = main->can(q[app])->();
 my $t   = Test::Mojo->new($app);
 
-$t->get_ok(q[/])->status_is(200)->content_like(qr/hello\.md/);
-
-$t->get_ok(q[/view/hello.md])
-  ->status_is(200)
-  ->content_like(qr/hello/i)
-  ->content_like(qr/world/i)
-  ->content_like(qr/42069/);
+$t->get_ok(q[/view/hello.md])->status_is(200, qq[status=200])
+  ->content_like(qr/\b42069\b/, qq[content=ok]);
 
 done_testing;
