@@ -4,5 +4,5 @@ COPY Makefile.PL .
 RUN cpanm --installdeps -n .
 COPY . .
 RUN prove
-EXPOSE 3000
+EXPOSE 8080
 CMD ["hypnotoad", "-f", "mojdoc"]

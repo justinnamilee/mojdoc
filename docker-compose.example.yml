@@ -6,34 +6,53 @@ services:
     container_name: mojdoc
     restart: unless-stopped
 
+
     ports:
-      - "3000:3000"
-    volumes:
-      # Mount a config file for use with hypnotoad (use this or environment below)
-      - ${MOJDOC_CONFIG_LOCAL:-./mojdoc.conf}:/opt/mojdoc/mojdoc.conf:ro
+      - "3000:8080"
 
-      # (required) Mount the docs directory from host into /data in the container
-      - ${MOJDOC_DOX_LOCAL:-./dox}:/data:ro
-      # (optional) Mount the welcome file from host into /welcome.md
-      - ${MOJDOC_WELCOME_LOCAL:-./welcome.md}:/welcome.md:ro
-
-    # These can ALL be set in the MOJDOC_CONFIG_LOCAL file, or here...
-    environment:
-      # Where the app should look (matched to above)
-      MOJDOC_DOX: /data
-      MOJDOC_WELCOME: /welcome.md
-
-      # (optional) Other app flags
-      MOJDOC_BANNER: ${MOJDOC_BANNER:-"mojdoc-docker"}
-      MOJDOC_LOGIT: ${MOJDOC_LOGIT:-0}
-
-      # (optional) Mojolicious hints
-      MOJO_MODE: ${MOJO_MODE:-production}
-      MOJO_LISTEN: http://*:3000
-
-    # (optional) simple healthcheck
     healthcheck:
-      test: ["CMD", "mojo", "get", "http://localhost:3000/health"]
+      test: ["CMD", "mojo", "get", "http://localhost:8080/health"]
       interval: 10s
       timeout: 3s
       retries: 5
+
+
+###### (optional section: volumes)
+#    # Here is where you can pass in everything you need!
+#    # The config can hold all your settings for MOJDOC and
+#    # Hypnotoad at the same time, so it's recommended.
+#    # Then you can point your folder and welcome.md as
+#    # needed here, too.
+#
+#    volumes:
+#      # Mount a Config plugin file for Hypnotoad (BEST OPTION)
+#      - ${MDL_CONFIG:-./mojdoc.conf}:/opt/mojdoc/mojdoc.conf:ro
+#
+#      # [required] Mount a directory that has Markdown files (The Whole Point™)
+#      - ${MDL_DOX:-./dox}:/data:ro
+#
+#      # Mount a custom welcome.md file (Make it your own!)
+#      - ${MDL_WELCOME:-./welcome.md}:/welcome.md:ro
+
+
+###### (optional section: environment)
+#    # If you don't want to use the config file you can
+#    # also pass all options in as environment variables
+#    # here.  See the README.md file for more information.
+#
+#    environment:
+#      # Where the app should look (matched to above)
+#      MOJDOC_DOX: /data
+#      MOJDOC_WELCOME: /welcome.md
+#
+#      MOJDOC_BANNER: "mojdoc-docker"
+#      MOJDOC_LOGIT: 1
+
+    # Example Config
+    volumes:
+      # run `mkdir ./documents` here first
+      - ./documents:/data/dox:ro
+    environment:
+      MOJDOC_DOX: /data/dox
+      MOJDOC_LOGGIT: 1
+      MOJDOC_BANNER: demo-docs
