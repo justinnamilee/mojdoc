@@ -102,21 +102,34 @@ helper crawlify => sub ($c) {
 
 #* safely resolve a relative path (prevent traversal probably)
 helper safify => sub ($c, $relpath) {
-  return undef unless -d $DOX;
+  return undef unless defined($DOX) && -d $DOX;
+
+  my $root = eval { $DOX->realpath };
+  return undef unless defined($root) && -d $root;
 
   $relpath //= q[];
 
-  $relpath =~ s[^\s+|\s+$][]g;
-  $relpath =~ s[\\][/]g;
-  $relpath =~ s[//+][/]g;
-  $relpath =~ s[^\./][];
+  return undef if $relpath =~ /\0/;
 
-  my $root = $DOX->realpath;
-  return undef unless -d $root;
+  $relpath =~ s[^\s+][]g; # strip tailing whitespace
+  $relpath =~ s[\s+$][]g; # strip tailing whitespace
+  $relpath =~ s[\\][/]g;  # convert "windows"
+  $relpath =~ s[//+][/]g; # collapse multi-slash
 
-  my $real = path($root, split m[/+], $relpath)->to_abs->realpath;
-  return undef unless -f $real;
+  return undef unless length($relpath);
 
+  my @segment = ();
+  foreach my $s (@{path($relpath)->to_array}) {
+    next unless (length($s) && $s ne q[..] && $s ne q[.]);
+
+    push(@segment, $s);
+  }
+
+  my $candidate = $root->child(@segment);
+  my $real = eval { $candidate->realpath };
+  return undef unless defined($real) && -f $real && -r _;
+
+  #? make sure generated path isn't a parent to root
   my $rel = $real->to_rel($root)->to_string;
   return undef if $rel =~ m[^\.\.(?:/|$)];
 
