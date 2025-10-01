@@ -123,14 +123,15 @@ You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environ
 ```
 ├── docker-compose.example.yml   ## useful if you want to deploy with Docker instead
 ├── Dockerfile
+├── ecosystem.config.js          ## your example pm2 config, it's in .gitignore
 ├── LICENSE
 ├── Makefile.PL
 ├── mojdoc                       ## main application
-├── mojdoc.conf                  ## your example config, it's in .gitignore
-├── private                      ## this folder is in .gitignore
-│   ├── dox
+├── mojdoc.conf                  ## your example application config, it's in .gitignore
+├── private                      ## this folder is in .gitignore, here's an example layout
+│   ├── dox                      ## default path to look for documents (MOJDOC_DOX)
 │   │   └── yourExample.md       ## where your files or subdirectories go
-│   └── welcome.md               ## your replacement welcome.md if you wanted
+│   └── welcome.md               ## your replacement welcome.md if you wanted (MOJDOC_WELCOME)
 ├── public
 │   ├── css
 │   │   └── mojdoc.css
@@ -138,11 +139,7 @@ You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environ
 │   └── welcome.md               ## default welcome page
 ├── README.md
 ├── t                            ## a non-zero amount of testing
-│   ├── 00-load.t
-│   ├── 01-health.t
-│   ├── 02-badge.t
-│   ├── 03-badpath.t
-│   └── 04-view.t
+│   └── ...
 └── templates                    ## actual web stuff for mojolicious
     ├── dox.html.ep
     ├── exception.html.ep
