@@ -34,9 +34,11 @@ app->log->debug(qq[Configured 'DOX' folder: $DOX]);
 app->log->error(q[The 'DOX' folder above does not exist, please create it!]) unless -d $DOX;
 
 #* welcome page (rendered on /)
-my $WELCOME = app->config->{welcome}
-  // $ENV{MOJDOC_WELCOME}
-  // path(__FILE__)->sibling(q[public])->child(q[welcome.md]);
+my $WELCOME = path(
+  app->config->{welcome}
+    // $ENV{MOJDOC_WELCOME}
+    // path(__FILE__)->sibling(q[public])->child(q[welcome.md])
+)->to_abs;
 app->log->debug(qq[Configured 'WELCOME' file: $WELCOME]);
 app->log->error(q[The 'WELCOME' file above does not exist, please create it (if you want it)!]) unless -f $WELCOME;
 
