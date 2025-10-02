@@ -47,7 +47,7 @@ morbo mojdoc
 
 ## Configuration
 
-You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environment variables.  If you're going to be running under something like PM2 the ENV var configuration may be the easiest method as you can stick it all in your environement (**or** `ecosystem.config.js`) when you add it to PM2.  If using Systemd maybe the config files are easiest?  Hard to say.  Lots of ways to skin that particular cat, so use whatever is best for you.  For Docker deploys I would **100% recommend** using a config file mounted to `/opt/mojdoc/mojdoc.conf`.
+You can configure via a `Config` plugin file (i.e. `mojdoc.conf`) **or** environment variables.  For Docker, PM2, or Systemd deploys I would **100% recommend** using a config file (Docker config should be mounted to `/opt/mojdoc/mojdoc.conf`).
 
 ### Specific Settings for `mojdoc`
 
@@ -78,11 +78,8 @@ You can configure via a `Config` plugin file (e.g. `mojdoc.conf`) **or** environ
   "dox": "/var/www/secure/dox",
   "welcome": "/var/www/secure/welcome.md",
   "logit": 0,
-  /* vv this could all go in mojdoc.production.conf vv */
   "hypnotoad": {
     "listen": "http://*:9009",
-    "max_request_size": 524288,
-    /* vv assuming nginx or haproxy on localhost vv */
     "proxy": 1,
     "trusted_proxies": "127.0.0.1, ::1"
   }
