@@ -84,8 +84,8 @@ Example steps:
 
 1. Copy or adapt the provided service file:
    [mojdoc.example.service](https://raw.githubusercontent.com/justinnamilee/mojdoc/refs/heads/main/mojdoc.example.service)
-2. Update the `WorkingDirectory` setting to your Mojdoc folder.
-3. Enable and start it:
+1. Update the `WorkingDirectory` setting to your Mojdoc folder.
+1. Enable and start it:
 
    ```bash
    cp mojdoc.example.service /etc/systemd/system/mojdoc.service
@@ -106,8 +106,10 @@ If you already use **PM2** to manage other apps, Mojdoc can fit right in.
 
 * Run Hypnotoad in **foreground mode**, and PM2 will manage restarts and logs.
 
-1. Copy or adapt the provided ecosystem file: [ecosystem.config.example.js](https://raw.githubusercontent.com/justinnamilee/mojdoc/refs/heads/main/ecosystem.config.example.js)
+1. Copy or adapt the provided ecosystem file:
+   [ecosystem.config.example.js](https://raw.githubusercontent.com/justinnamilee/mojdoc/refs/heads/main/ecosystem.config.example.js)
 1. Start it and save it:
+
    ```bash
    cp ecosystem.config.example.js ecosystem.config.js
    vim ecosystem.config.js
