@@ -51,7 +51,7 @@ cpanm Text::MultiMarkdown
 apt install libmojolicious-perl libtext-multimarkdown-perl
 ```
 
-### ▶️ Run Mojdoc
+### 🟢 Run Mojdoc
 
 ```bash
 # Clone the app
