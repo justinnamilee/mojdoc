@@ -1,0 +1,36 @@
+[Unit]
+Description=mojdoc
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# Run as this user/group
+User=webuser
+Group=webuser
+
+# App directory
+WorkingDirectory=/opt/mojdoc
+
+# Env
+Environment=MOJO_MODE=production
+Environment=MOJO_LOG_LEVEL=debug
+
+# Run hypnotoad in the foreground so systemd captures stdout/stderr
+ExecStart=/usr/bin/hypnotoad -f mojdoc
+# Hot reload (zero-downtime) on demand
+ExecReload=/usr/bin/hypnotoad mojdoc
+# Graceful stop
+ExecStop=/usr/bin/hypnotoad -s mojdoc
+
+Restart=on-failure
+RestartSec=20s
+
+# Make sure logs land in the journal
+StandardOutput=journal
+StandardError=inherit
+
+# Optional: raise file descriptor limits if you expect many connections
+# LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

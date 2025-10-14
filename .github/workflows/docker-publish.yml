@@ -1,4 +1,4 @@
-name: Manage Docker Images on GHRC
+name: GHRC Build
 
 on:
   release:
