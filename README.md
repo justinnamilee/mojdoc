@@ -106,6 +106,8 @@ If you already use **PM2** to manage other apps, Mojdoc can fit right in.
 
 * Run Hypnotoad in **foreground mode**, and PM2 will manage restarts and logs.
 
+Example steps:
+
 1. Copy or adapt the provided ecosystem file:
    [ecosystem.config.example.js](https://raw.githubusercontent.com/justinnamilee/mojdoc/refs/heads/main/ecosystem.config.example.js)
 1. Start it and save it:
