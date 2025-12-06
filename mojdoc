@@ -70,11 +70,13 @@ hook before_dispatch => sub ($c) {
     q[script-src 'self' https://cdnjs.cloudflare.com 'sha256-O6piNkhLv4BI/Oje+MccCmgUSrS1sIp+CMaOsvD/VWU='],
     q[style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com],
     q[img-src 'self' data: https:],
+    q[media-src 'self' https:],
     q[font-src 'self' data:],
     q[connect-src 'self'],
     q[object-src 'none'],
     q[base-uri 'self'],
     q[form-action 'self'],
+    q[frame-src 'self'],
     q[frame-ancestors 'self'],
   ));
 
